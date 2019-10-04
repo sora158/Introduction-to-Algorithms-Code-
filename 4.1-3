@@ -1,0 +1,102 @@
+#define N 8
+class lrc {
+public:
+	int min;
+	int max;
+	int sum;
+};
+
+class recross {
+public:
+	int maxleft;
+	int maxright;
+	int leftsum;
+	int rightsum;
+};
+//暴力法
+int* happy(int a[]) {
+	int low = 0;
+	int high = 0;
+	int max = -9999;
+	for (int i = 0; i < N; i++) {
+		int sum = 0;
+		for (int j = i; j < N; j++) {
+			sum = sum + a[j];
+			if (sum > max) {
+				max = sum;
+				low = i;
+				high = j;
+			}
+	
+		}
+	}
+	int b[2] = { low,high };
+	cout << low;
+	cout << high;
+	return b;
+}
+//归并 返回值recross包含数组下界和上界以及一个和 跨越Mid的子数组的和
+recross findCrossSub(int a[], int low,int mid,int high) {
+	recross cross;
+	cross.leftsum= -9999;
+	int sum = 0;
+	cross.maxleft = mid;
+	for (int i = mid; i >= low; i--) {
+		sum += a[i];
+		if (sum > cross.leftsum) {
+			cross.leftsum = sum;
+			cross.maxleft = i;
+		}
+	}
+	cross.rightsum = -9999;
+	sum = 0;
+	cross.maxright = mid;
+	for (int i = mid+1; i<=high; i++) {
+		sum += a[i];
+		if (sum > cross.rightsum) {
+			cross.rightsum = sum;
+		    cross.maxright = i;
+		}
+	}
+	return cross;
+}
+//如果最大子数组在左和右则递归，如果在中间则findCrossSub将求和当前跨越mid的子数组 
+//Irc和recross实际为同一类 不再写赋值函数
+lrc findMaxSub(int a[],int low,int high) {
+	
+	
+	if (low == high) {
+		lrc one;
+		one.max = high;
+		one.min = low;
+		one.sum = a[low];
+		return one;
+	}
+	else {
+
+		    lrc left, right, lrcross;
+		    recross cross;
+			int mid = (low + high) / 2;
+      //递归
+			left = findMaxSub(a, low, mid);
+			right = findMaxSub(a, mid+1, high);
+      //合并
+			cross = findCrossSub(a, low,mid + 1, high);
+      //赋值函数 将上下界赋值
+			lrcross.sum = cross.leftsum + cross.rightsum;
+			lrcross.min = cross.maxleft;
+			lrcross.max = cross.maxright;
+
+			if (left.sum >= right.sum && left.sum >= cross.leftsum + cross.rightsum) {
+				return left;
+
+			}
+
+			else if (right.sum >= left.sum && right.sum >= cross.leftsum + cross.rightsum) {
+				return right;
+			}
+
+			else {
+				return lrcross;
+			}
+	}
