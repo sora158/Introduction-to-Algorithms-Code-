@@ -1,0 +1,55 @@
+def STRASSEN(A,B):
+    if A.shape[0]==1 and B.shape[0]==1 and A.shape[1]==1 and B.shape[1]==1:
+        C = A * B
+        return C
+    else:
+        Arow = A.shape[0]
+        Acol = A.shape[1]
+        Brow = B.shape[0]
+        Bcol = B.shape[1]
+        Arowmid = int(Arow/2)
+        Acolmid = int(Acol/2)
+        Browmid = int(Brow/2)
+        Bcolmid = int(Bcol/2)
+        A11 = A[0:Arowmid,0:Acolmid]
+        A12 = A[0:Arowmid,Acolmid:Acol]
+        A21 = A[Arowmid:Arow,0:Acolmid]
+        A22 = A[Arowmid:Arow,Acolmid:Acol]
+        B11 = B[0:Browmid,0:Bcolmid]
+        B12 = B[0:Browmid,Bcolmid:Bcol]
+        B21 = B[Browmid:Brow,0:Bcolmid]
+        B22 = B[Browmid:Brow,Bcolmid:Bcol]
+        
+        S1 = B12 - B22
+        S2 = A11 + A12
+        S3 = A21 + A22
+        S4 = B21 - B11
+        S5 = A11 + A22
+        S6 = B11 + B22
+        S7 = A12 - A22
+        S8 = B21 + B22
+        S9 = A11 - A21
+        S10 = B11 + B12
+        P1 = STRASSEN(A11, S1)
+        P2 = STRASSEN(S2, B22)
+        P3 = STRASSEN(S3, B11)
+        P4 = STRASSEN(A22, S4)
+        P5 = STRASSEN(S5, S6)
+        P6 = STRASSEN(S7, S8)
+        P7 = STRASSEN(S9, S10)
+        C = np.zeros((A.shape[0],B.shape[1]))
+        C[0:Arowmid,0:Bcolmid] = P5 + P4 - P2 + P6
+        C[0:Arowmid,Bcolmid:Bcol] = P1 + P2
+        C[Arowmid:Arow,0:Bcolmid] = P3 + P4
+        C[Arowmid:Arow,Bcolmid:Bcol]=P5+P1 - P3 - P7
+        return C
+/*
+C1=STRASSEN(A,B)
+C2=np.dot(A,B)
+
+print(C1)
+print('_____________________')
+print(C2)
+print('_____________________')
+print(np.sum(C1-C2))
+*/
